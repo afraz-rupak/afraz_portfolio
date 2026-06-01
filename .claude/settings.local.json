@@ -36,7 +36,14 @@
       "Bash(mkdir -p /tmp/v1ref)",
       "Bash(cp \"portfolio website/assets/data.js\" /tmp/v1ref/data.js)",
       "Bash(cp \"portfolio website/index.html\" /tmp/v1ref/index.html)",
-      "Bash(cp \"portfolio website/projects.html\" /tmp/v1ref/projects.html)"
+      "Bash(cp \"portfolio website/projects.html\" /tmp/v1ref/projects.html)",
+      "Bash(node --check assets/editor.js)",
+      "Bash(git config *)",
+      "Bash(python3 -m py_compile api/contact.py)",
+      "Bash(python3 -c \"import json;json.load\\(open\\('vercel.json'\\)\\);print\\('vercel.json OK'\\)\")",
+      "Bash(echo \"name: $\\(git config user.name || git config --global user.name || echo UNSET\\)\")",
+      "Bash(echo \"email: $\\(git config user.email || git config --global user.email || echo UNSET\\)\")",
+      "Bash(git add *)"
     ]
   }
 }

@@ -7,7 +7,8 @@
 /* ---------- Auth gate ---------- */
 .gate { position: fixed; inset: 0; z-index: 500; display: grid; place-items: center; background: var(--bg); padding: 1.5rem; }
 .gate-card { width: min(420px, 100%); background: var(--bg-2); border: 1px solid var(--border); border-radius: 18px; padding: clamp(1.8rem, 5vw, 2.6rem); box-shadow: var(--shadow); }
-.gate-mark { width: 3rem; height: 3rem; border-radius: 12px; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-family: "Space Grotesk"; font-weight: 700; font-size: 1.1rem; margin-bottom: 1.4rem; }
+.gate-mark { width: 3rem; height: 3rem; border-radius: 12px; background: transparent; color: var(--on-accent); display: grid; place-items: center; overflow: hidden; font-family: "Space Grotesk"; font-weight: 700; font-size: 1.1rem; margin-bottom: 1.4rem; }
+.gate-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .gate h1 { font-size: 1.5rem; }
 .gate p { color: var(--text-muted); margin: .5rem 0 1.6rem; font-size: .95rem; }
 .gate .hint { font-size: .82rem; color: var(--text-faint); margin-top: 1rem; }

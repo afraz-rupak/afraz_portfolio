@@ -73,7 +73,7 @@ function renderHeader() {
   <header class="site-header" id="siteHeader">
     <div class="container nav">
       <a class="brand" href="index.html">
-        <span class="mark">${PROFILE.initials}</span>
+        <span class="mark"><img src="assets/img/profile_logo.png" alt="${PROFILE.shortName}" /></span>
         <span>${PROFILE.shortName} Ul Haque <span class="mark-sub">/ ML</span></span>
       </a>
       <nav aria-label="Primary">
@@ -97,7 +97,7 @@ function renderFooter() {
       <div class="footer-grid">
         <div class="footer-brand">
           <a class="brand" href="index.html">
-            <span class="mark">${PROFILE.initials}</span>
+            <span class="mark"><img src="assets/img/profile_logo.png" alt="${PROFILE.shortName}" /></span>
             <span>${PROFILE.name}</span>
           </a>
           <p>${PROFILE.summary}</p>

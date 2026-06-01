@@ -43,6 +43,23 @@
     $("edAvatar").textContent = PROFILE.initials;
     $("moreBtn").innerHTML = ICON.dots || "···";
     $("savedIcon").innerHTML = ICON.check;
+    $("pubClose").innerHTML = ICON.close;
+
+    // selection toolbar icons (heading buttons keep their "T")
+    const tb = $("selToolbar");
+    const setIcon = (root, sel, svg) => { const b = root.querySelector(sel); if (b && svg) b.innerHTML = svg; };
+    setIcon(tb, '[data-cmd="bold"]', ICON.bold);
+    setIcon(tb, '[data-cmd="italic"]', ICON.italic);
+    setIcon(tb, '[data-val="blockquote"]', ICON.quote);
+    setIcon(tb, '[data-cmd="createLink"]', ICON.link);
+
+    // plus insert menu icons
+    $("plusBtn").innerHTML = ICON.plus;
+    const pm = $("plusMenu");
+    setIcon(pm, '[data-insert="image"]', ICON.image);
+    setIcon(pm, '[data-insert="code"]', ICON.code);
+    setIcon(pm, '[data-insert="embed"]', ICON.embed);
+    setIcon(pm, '[data-insert="divider"]', ICON.divider);
   }
 
   /* ---------- load existing post or fresh draft ---------- */
@@ -253,11 +270,7 @@
   function insertBlock(type) {
     $("edBody").focus();
     if (type === "image") {
-      const url = prompt("Image URL (leave blank to insert a placeholder you can swap later):", "");
-      const fig = url
-        ? `<figure><img src="${escapeAttr(url)}" alt=""><figcaption>Add a caption…</figcaption></figure>`
-        : `<figure><div class="ph" data-label="image — replace src"></div><figcaption>Add a caption…</figcaption></figure>`;
-      document.execCommand("insertHTML", false, fig + "<p><br></p>");
+      pickLocalImage();
     } else if (type === "code") {
       document.execCommand("insertHTML", false, `<pre><code>// your code here</code></pre><p><br></p>`);
     } else if (type === "divider") {
@@ -267,6 +280,44 @@
       if (url) document.execCommand("insertHTML", false, `<p><a href="${escapeAttr(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a></p><p><br></p>`);
     }
     refreshEmpty(); markDirty();
+  }
+
+  /* ---------- insert an image from the local computer ---------- */
+  function pickLocalImage() {
+    const body = $("edBody");
+    body.focus();
+    // remember where the caret is — the file dialog steals focus/selection
+    const sel = window.getSelection();
+    const range = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.style.display = "none";
+    document.body.appendChild(input);
+
+    input.addEventListener("change", () => {
+      const file = input.files && input.files[0];
+      if (!file) { input.remove(); return; }
+      if (!file.type.startsWith("image/")) { toast("Please choose an image file"); input.remove(); return; }
+      // ~4 MB guard: data URLs are stored in the post body (localStorage)
+      if (file.size > 4 * 1024 * 1024) { toast("Image is large (>4MB) — it may not save"); }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        body.focus();
+        if (range) { const s = window.getSelection(); s.removeAllRanges(); s.addRange(range); }
+        const alt = escapeAttr(file.name.replace(/\.[^.]+$/, ""));
+        const fig = `<figure><img src="${reader.result}" alt="${alt}"><figcaption>Add a caption…</figcaption></figure><p><br></p>`;
+        document.execCommand("insertHTML", false, fig);
+        refreshEmpty(); markDirty();
+      };
+      reader.onerror = () => toast("Couldn't read that image");
+      reader.readAsDataURL(file);
+      input.remove();
+    });
+
+    input.click();
   }
 
   /* ---------- publish flow ---------- */

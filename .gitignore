@@ -148,6 +148,13 @@ celerybeat.pid
 backend/messages.db
 *.db
 
+# Local backups / duplicates / archives — kept locally, not on GitHub
+portfolio website.bak-premerge/
+portfolio website 2/
+portfolio website.zip
+*.zip
+.vercel
+
 # Environments
 .env
 .venv

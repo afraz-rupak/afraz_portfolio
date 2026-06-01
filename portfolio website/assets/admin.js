@@ -3,7 +3,7 @@
    (plain script: shares global scope with data.js / store.js / site.js)
    ========================================================================= */
 
-const AUTH_CODE = "afraz2025";          // change this passcode
+const AUTH_CODE = "afraz25627377";      // change this passcode
 const AUTH_KEY = "afraz-admin-session";
 
 const SECTIONS = [
@@ -21,7 +21,7 @@ let CURRENT_SECTION = "overview";
 
 /* ---------------- boot ---------------- */
 function initAdmin() {
-  document.getElementById("gateMark").textContent = PROFILE.initials;
+  document.getElementById("gateMark").innerHTML = '<img src="assets/img/profile_logo.png" alt="' + PROFILE.shortName + '" />';
 
   // auth
   if (sessionStorage.getItem(AUTH_KEY) === "1") unlock();
@@ -74,7 +74,7 @@ function buildSidebar() {
 
   sb.innerHTML = `
     <a class="brand" href="index.html">
-      <span class="mark">${PROFILE.initials}</span>
+      <span class="mark"><img src="assets/img/profile_logo.png" alt="${PROFILE.shortName}" /></span>
       <span>${PROFILE.shortName} <span class="mark-sub">/ Admin</span></span>
     </a>
     <div class="side-label">Manage</div>
