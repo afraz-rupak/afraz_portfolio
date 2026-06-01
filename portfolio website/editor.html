@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Write a story — Afraz Ul Haque</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/editor.css" />
+</head>
+<body class="editor-body">
+
+  <!-- Top bar -->
+  <header class="ed-top" id="edTop">
+    <div class="ed-top-left">
+      <a class="ed-back" href="admin.html#blog"><span id="edBackIcon"></span> Dashboard</a>
+      <span class="ed-status">
+        <span class="draft">Draft</span>
+        <span class="sep"></span>
+        <span class="saved" id="savedLabel"><span id="savedIcon"></span><span id="savedText">Saved</span></span>
+      </span>
+    </div>
+    <div class="ed-top-right">
+      <button class="btn ed-publish" id="publishBtn">Publish</button>
+      <button class="ed-icon" id="moreBtn" aria-label="More options"></button>
+      <button class="ed-avatar" id="edAvatar" aria-label="Account"></button>
+    </div>
+  </header>
+
+  <!-- More dropdown -->
+  <div class="ed-menu" id="edMenu">
+    <button id="miPreview">Preview live page</button>
+    <button id="miDash">Back to dashboard</button>
+    <hr />
+    <button id="miClear" class="danger">Clear editor</button>
+  </div>
+
+  <!-- Canvas -->
+  <main class="ed-canvas">
+    <div class="ed-doc" id="edDoc">
+      <div class="ed-title" id="edTitle" contenteditable="true" data-ph="Title" spellcheck="true"></div>
+      <div class="ed-body" id="edBody" contenteditable="true" data-ph="Tell your story…" spellcheck="true"></div>
+    </div>
+  </main>
+
+  <!-- Floating selection toolbar -->
+  <div class="sel-toolbar" id="selToolbar">
+    <button data-cmd="bold" title="Bold"></button>
+    <button data-cmd="italic" title="Italic"></button>
+    <span class="tdiv"></span>
+    <button class="t-h" data-cmd="formatBlock" data-val="h2" title="Heading">T</button>
+    <button class="t-h sm" data-cmd="formatBlock" data-val="h3" title="Subheading">T</button>
+    <button data-cmd="formatBlock" data-val="blockquote" title="Quote"></button>
+    <span class="tdiv"></span>
+    <button data-cmd="createLink" title="Link"></button>
+  </div>
+
+  <!-- Link popover -->
+  <div class="link-pop" id="linkPop">
+    <input id="linkInput" type="url" placeholder="Paste or type a link…" />
+    <button id="linkApply">Apply</button>
+  </div>
+
+  <!-- Plus insert menu -->
+  <div class="plus-menu" id="plusMenu">
+    <button class="plus-btn" id="plusBtn" aria-label="Insert"></button>
+    <div class="plus-row">
+      <button data-insert="image" title="Add image"></button>
+      <button data-insert="code" title="Add code block"></button>
+      <button data-insert="embed" title="Add embed"></button>
+      <button data-insert="divider" title="Add divider"></button>
+    </div>
+  </div>
+
+  <!-- Publish slide-over -->
+  <div class="pub-backdrop" id="pubBackdrop"></div>
+  <aside class="pub-panel" id="pubPanel" aria-label="Publish settings">
+    <div class="pub-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem">
+        <h2 id="pubHeading">Story preview</h2>
+        <button class="ed-icon" id="pubClose" aria-label="Close" style="color:var(--text-muted)"></button>
+      </div>
+      <p class="sub">Set how your story appears on the blog. You can edit any of this later from the dashboard.</p>
+
+      <div class="pub-preview">
+        <div class="ph" data-label="cover — add in dashboard"></div>
+        <div class="pp-body">
+          <span class="pp-cat" id="pubPrevCat">Category</span>
+          <h3 id="pubPrevTitle">Untitled</h3>
+          <p id="pubPrevSummary">Your summary will appear here.</p>
+        </div>
+      </div>
+
+      <div class="efld">
+        <label for="pubCategory">Category</label>
+        <select id="pubCategory"></select>
+      </div>
+      <div class="efld">
+        <label>Tags</label>
+        <div id="pubTagsMount"></div>
+        <span class="help">Help readers find this — add 2–4 topics.</span>
+      </div>
+      <div class="efld">
+        <label for="pubSummary">Subtitle / summary</label>
+        <textarea id="pubSummary" placeholder="A short line shown on cards and at the top of the article."></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="efld"><label for="pubDate">Publish date</label><input id="pubDate" type="date" /></div>
+        <div class="efld"><label for="pubRead">Read time (min)</label><input id="pubRead" type="number" min="1" /></div>
+      </div>
+
+      <div class="pub-foot">
+        <button class="btn btn-outline" id="pubCancelClose" onclick="document.getElementById('pubBackdrop').click()">Keep editing</button>
+        <button class="btn btn-primary" id="pubConfirm" style="background:var(--accent-2);box-shadow:none">Publish now</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="toast-wrap" id="toasts"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/blog-content.js"></script>
+  <script src="assets/store.js"></script>
+  <script src="assets/site.js"></script>
+  <script src="assets/editor.js"></script>
+</body>
+</html>

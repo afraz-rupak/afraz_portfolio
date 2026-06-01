@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog — Afraz Ul Haque</title>
+  <meta name="description" content="Technical writing by Afraz Ul Haque: machine learning concepts, deep learning tutorials, research paper explanations, MLOps and data science notes." />
+  <meta name="author" content="Afraz Ul Haque" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/pages.css" />
+  <style>
+    .feature-post { display: grid; grid-template-columns: 1.1fr 1fr; gap: 0; overflow: hidden; }
+    .feature-post .fp-thumb { aspect-ratio: auto; min-height: 320px; border-right: 1px solid var(--border); }
+    .feature-post .fp-body { padding: clamp(1.8rem, 4vw, 2.8rem); display: flex; flex-direction: column; gap: 1rem; justify-content: center; }
+    .feature-post h2 { font-size: clamp(1.5rem, 3.2vw, 2.2rem); }
+    @media (max-width: 760px) { .feature-post { grid-template-columns: 1fr; } .feature-post .fp-thumb { border-right: 0; border-bottom: 1px solid var(--border); min-height: 200px; } }
+  </style>
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <main>
+    <section class="page-hero grid-bg">
+      <div class="container reveal">
+        <span class="eyebrow">Blog</span>
+        <h1>Notes &amp; tutorials.</h1>
+        <p class="lead">Writing about machine learning concepts, deep learning tutorials, research-paper walkthroughs, MLOps, and reflections from the lab.</p>
+      </div>
+    </section>
+
+    <!-- featured post -->
+    <section class="section-tight">
+      <div class="container">
+        <article class="card card-hover feature-post reveal" id="featurePost"></article>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="filter-row reveal" id="blogFilter" style="margin-bottom:2rem"></div>
+        <div class="blog-grid" id="blogGrid"></div>
+        <p class="form-note" style="margin-top:2rem;text-align:center">Posts are sample placeholders — swap in real articles by editing <span class="mono">BLOGS</span> in <span class="mono">data.js</span>, or wire up a Markdown/CMS source later.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer-slot"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/blog-content.js"></script>
+  <script src="assets/store.js"></script>
+  <script src="assets/site.js"></script>
+  <script>
+    let blogFilter = "All";
+
+    function blogCard(b, i) {
+      return `
+        <a class="card card-hover bcard reveal" data-delay="${(i%3)+1}" href="blog-post.html?id=${b.id}">
+          <div class="ph bthumb" data-label="post cover"></div>
+          <div class="bbody">
+            <span class="bcat">${b.category}</span>
+            <h3>${b.title}</h3>
+            <p class="bsum">${b.summary}</p>
+            <div class="tag-row">${b.tags.slice(0,3).map(tagPill).join("")}</div>
+            <div class="bmeta"><span>${fmtDate(b.date)}</span><span class="dotsep"></span><span>${b.read} min read</span></div>
+            <span class="read-more">Read more ${ICON.arrow}</span>
+          </div>
+        </a>`;
+    }
+
+    function renderBlog() {
+      const items = blogFilter === "All" ? BLOGS.slice(1) : BLOGS.filter(b => b.category === blogFilter);
+      document.getElementById("blogGrid").innerHTML = items.map(blogCard).join("") || `<p class="muted">No posts in this category yet.</p>`;
+      initReveals();
+    }
+
+    function onPageReady() {
+      const f = BLOGS[0];
+      document.getElementById("featurePost").innerHTML = `
+        <div class="ph fp-thumb" data-label="featured cover"></div>
+        <div class="fp-body">
+          <span class="bcat" style="color:var(--accent);font-family:'Space Grotesk';font-size:.76rem;letter-spacing:.08em;text-transform:uppercase">Featured · ${f.category}</span>
+          <h2>${f.title}</h2>
+          <p class="muted">${f.summary}</p>
+          <div class="tag-row">${f.tags.map(tagPill).join("")}</div>
+          <div class="bmeta" style="color:var(--text-faint);font-size:.85rem;display:flex;gap:.8rem;align-items:center"><span>${fmtDate(f.date)}</span><span class="dotsep" style="width:3px;height:3px;border-radius:50%;background:currentColor"></span><span>${f.read} min read</span></div>
+          <a class="btn btn-primary" href="blog-post.html?id=${f.id}" style="align-self:flex-start;margin-top:.5rem">Read article ${ICON.arrow}</a>
+        </div>`;
+
+      document.getElementById("blogFilter").innerHTML = BLOG_CATEGORIES.map((c, i) =>
+        `<button class="${i===0?"active":""}" data-cat="${c}">${c}</button>`).join("");
+      document.querySelectorAll("#blogFilter button").forEach(b => b.addEventListener("click", () => {
+        blogFilter = b.dataset.cat;
+        document.querySelectorAll("#blogFilter button").forEach(x => x.classList.toggle("active", x === b));
+        renderBlog();
+      }));
+
+      renderBlog();
+    }
+  </script>
+</body>
+</html>

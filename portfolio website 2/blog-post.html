@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Article — Afraz Ul Haque</title>
+  <meta name="description" content="An article from the blog of Afraz Ul Haque — machine learning, deep learning and data science writing." />
+  <meta name="author" content="Afraz Ul Haque" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/pages.css" />
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <main id="articleMain">
+    <!-- filled by JS -->
+  </main>
+
+  <div id="site-footer-slot"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/blog-content.js"></script>
+  <script src="assets/store.js"></script>
+  <script src="assets/site.js"></script>
+  <script>
+    function getParam(name) {
+      return new URLSearchParams(location.search).get(name);
+    }
+
+    function notFound() {
+      document.getElementById("articleMain").innerHTML = `
+        <section class="section">
+          <div class="container-narrow" style="text-align:center;padding-block:4rem">
+            <span class="eyebrow" style="justify-content:center">404</span>
+            <h1 style="font-size:clamp(2rem,5vw,3rem);margin:1rem 0">Article not found</h1>
+            <p class="lead" style="margin:0 auto 2rem">That post doesn't exist or hasn't been published yet.</p>
+            <a class="btn btn-primary" href="blog.html">${ICON.arrow} Back to the blog</a>
+          </div>
+        </section>`;
+    }
+
+    function onPageReady() {
+      const id = getParam("id");
+      const idx = BLOGS.findIndex(b => b.id === id);
+      if (idx === -1) { notFound(); return; }
+      const post = BLOGS[idx];
+      const prev = BLOGS[idx - 1];
+      const next = BLOGS[idx + 1];
+      const author = PROFILE.name;
+      document.title = post.title + " — " + PROFILE.shortName + " Ul Haque";
+
+      const body = post.body || `<p>${post.summary}</p><p class="muted">Full article coming soon.</p>`;
+
+      // build TOC from h2s in the body
+      const tmp = document.createElement("div");
+      tmp.innerHTML = body;
+      const heads = [...tmp.querySelectorAll("h2")];
+      heads.forEach((h, i) => { if (!h.id) h.id = "sec-" + i; });
+      const bodyHtml = tmp.innerHTML;
+      const toc = heads.length > 2 ? `
+        <nav class="article-toc">
+          <div class="toc-label">On this page</div>
+          ${heads.map(h => `<a href="#${h.id}">${h.textContent}</a>`).join("")}
+        </nav>` : `<div></div>`;
+
+      const related = BLOGS.filter(b => b.id !== post.id && (b.category === post.category || b.tags.some(t => post.tags.includes(t)))).slice(0, 3);
+      const relatedFallback = related.length ? related : BLOGS.filter(b => b.id !== post.id).slice(0, 3);
+
+      const shareUrl = encodeURIComponent(location.href);
+      const shareText = encodeURIComponent(post.title);
+
+      document.getElementById("articleMain").innerHTML = `
+        <section class="article-hero grid-bg">
+          <div class="container-narrow">
+            <a class="article-back" href="blog.html">${ICON.arrow} All articles</a>
+            <span class="bcat" style="color:var(--accent);font-family:'Space Grotesk';font-size:.78rem;letter-spacing:.08em;text-transform:uppercase">${post.category}</span>
+            <h1>${post.title}</h1>
+            <div class="article-meta">
+              <span class="article-author"><span class="av">${PROFILE.initials}</span><span class="an">${author}</span></span>
+              <span class="dotsep"></span>
+              <span>${fmtDate(post.date)}</span>
+              <span class="dotsep"></span>
+              <span style="display:inline-flex;align-items:center;gap:.35rem">${ICON.clock} ${post.read} min read</span>
+            </div>
+            <div class="ph article-cover" data-label="article cover"></div>
+          </div>
+        </section>
+
+        <section class="section" style="padding-top:clamp(2rem,4vw,3rem)">
+          <div class="container">
+            <div class="article-layout">
+              ${toc}
+              <article>
+                <p class="lead" style="color:var(--text);font-size:1.25rem;margin-bottom:2rem">${post.summary}</p>
+                <div class="prose">${bodyHtml}</div>
+                <div class="article-tags">${post.tags.map(tagPill).join("")}</div>
+                <div class="article-foot">
+                  <span class="av">${PROFILE.initials}</span>
+                  <div>
+                    <div class="an">${author}</div>
+                    <div class="ar">${PROFILE.title}</div>
+                  </div>
+                </div>
+                <div class="article-nav">
+                  ${prev ? `<a class="card card-hover prev" href="blog-post.html?id=${prev.id}"><span class="dir">← Previous</span><span class="nt">${prev.title}</span></a>` : `<span></span>`}
+                  ${next ? `<a class="card card-hover next" href="blog-post.html?id=${next.id}"><span class="dir">Next →</span><span class="nt">${next.title}</span></a>` : `<span></span>`}
+                </div>
+              </article>
+              <div class="article-share">
+                <span class="sl">Share</span>
+                <a href="https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareText}" target="_blank" rel="noopener" aria-label="Share on X">${ICON.x}</a>
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}" target="_blank" rel="noopener" aria-label="Share on LinkedIn">${ICON.linkedin}</a>
+                <button id="copyLink" aria-label="Copy link">${ICON.link}</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" style="padding-top:0">
+          <div class="container">
+            <div class="section-head-row"><div><span class="eyebrow">Keep reading</span><h2 style="margin-top:.8rem;font-size:clamp(1.5rem,3vw,2.1rem)">Related articles</h2></div><a class="link-more" href="blog.html">All posts ${ICON.arrow}</a></div>
+            <div class="blog-grid">
+              ${relatedFallback.map((b, i) => `
+                <a class="card card-hover bcard reveal" data-delay="${(i%3)+1}" href="blog-post.html?id=${b.id}">
+                  <div class="ph bthumb" data-label="post cover"></div>
+                  <div class="bbody">
+                    <span class="bcat">${b.category}</span>
+                    <h3>${b.title}</h3>
+                    <p class="bsum">${b.summary}</p>
+                    <div class="bmeta"><span>${fmtDate(b.date)}</span><span class="dotsep"></span><span>${b.read} min read</span></div>
+                  </div>
+                </a>`).join("")}
+            </div>
+          </div>
+        </section>`;
+
+      // copy link
+      const cp = document.getElementById("copyLink");
+      if (cp) cp.addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(location.href); cp.innerHTML = ICON.check; setTimeout(() => cp.innerHTML = ICON.link, 1600); } catch (e) {}
+      });
+
+      // scrollspy for TOC
+      const tocLinks = [...document.querySelectorAll(".article-toc a")];
+      if (tocLinks.length) {
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach(en => {
+            if (en.isIntersecting) {
+              tocLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+            }
+          });
+        }, { rootMargin: "-20% 0px -70% 0px" });
+        document.querySelectorAll(".prose h2").forEach(h => spy.observe(h));
+      }
+
+      initReveals();
+      window.scrollTo(0, 0);
+    }
+  </script>
+</body>
+</html>

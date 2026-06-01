@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Afraz Ul Haque — Machine Learning Researcher & AI Developer</title>
+  <meta name="description" content="Afraz Ul Haque — Machine Learning Researcher, AI Developer and Data Scientist. Master's researcher at UTS working on computer vision, NLP, deep learning and medical AI." />
+  <meta name="keywords" content="Afraz Ul Haque, Machine Learning, AI Researcher, Deep Learning, Computer Vision, NLP, Data Science, Medical AI, Vision-Language Models" />
+  <meta name="author" content="Afraz Ul Haque" />
+  <meta property="og:title" content="Afraz Ul Haque — ML Researcher & AI Developer" />
+  <meta property="og:description" content="Computer vision, NLP, deep learning and medical AI. Research + production ML." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/pages.css" />
+</head>
+<body>
+  <div id="site-header-slot"></div>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero grid-bg">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-main reveal">
+            <span class="eyebrow">Available for research &amp; ML roles</span>
+            <h1>Afraz Ul Haque</h1>
+            <div class="hero-title">
+              <span>Machine Learning Researcher</span><span class="sep">/</span>
+              <span>AI Developer</span><span class="sep">/</span>
+              <span>Data Science</span>
+            </div>
+            <p class="lead">I build intelligent systems that solve real-world problems — across computer vision, NLP and deep learning. Currently a Master's researcher in Data Science &amp; Innovation at UTS, with industry experience shipping production ML.</p>
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="projects.html">View Projects <span id="ar1"></span></a>
+              <a class="btn btn-outline" href="blog.html">Read Blogs</a>
+              <a class="btn btn-outline" href="research.html">Research Profile</a>
+              <a class="btn btn-ghost" id="cvBtn" href="#" target="_blank" rel="noopener">Download CV</a>
+            </div>
+            <div class="hero-social" id="heroSocial"></div>
+          </div>
+
+          <aside class="hero-aside reveal" data-delay="2">
+            <div class="ph hero-portrait" data-label="your headshot"></div>
+            <div class="card" style="padding:1.2rem 1.4rem">
+              <div class="facts" id="heroFacts"></div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row" id="statsRow"></div>
+      </div>
+    </section>
+
+    <!-- FOCUS AREAS -->
+    <section class="section-tight">
+      <div class="container">
+        <div class="section-head-row">
+          <div>
+            <span class="eyebrow">What I work on</span>
+            <h2 style="margin-top:.8rem">Focus areas</h2>
+          </div>
+          <a class="link-more" href="about.html">More about me <span id="ar2"></span></a>
+        </div>
+        <div class="focus-grid" id="focusGrid"></div>
+      </div>
+    </section>
+
+    <!-- FEATURED PROJECTS -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head-row">
+          <div>
+            <span class="eyebrow">Selected work</span>
+            <h2 style="margin-top:.8rem">Featured projects</h2>
+          </div>
+          <a class="link-more" href="projects.html">All projects <span id="ar3"></span></a>
+        </div>
+        <div class="proj-grid" id="featuredProjects"></div>
+      </div>
+    </section>
+
+    <!-- PUBLICATIONS -->
+    <section class="section-tight">
+      <div class="container">
+        <div class="section-head-row">
+          <div>
+            <span class="eyebrow">Peer-reviewed</span>
+            <h2 style="margin-top:.8rem">Recent publications</h2>
+          </div>
+          <a class="link-more" href="research.html">Research profile <span id="ar4"></span></a>
+        </div>
+        <div class="pub-list" id="pubPreview"></div>
+      </div>
+    </section>
+
+    <!-- BLOG -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head-row">
+          <div>
+            <span class="eyebrow">Writing</span>
+            <h2 style="margin-top:.8rem">From the blog</h2>
+          </div>
+          <a class="link-more" href="blog.html">All posts <span id="ar5"></span></a>
+        </div>
+        <div class="blog-grid" id="blogPreview"></div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="cta-band reveal">
+          <span class="eyebrow" style="justify-content:center">Let's connect</span>
+          <h2 style="margin-top:1rem">Have a research idea or a role in mind?</h2>
+          <p>I'm open to research collaborations, open-source projects, and ML engineering opportunities — in Australia and globally.</p>
+          <div class="cta-actions">
+            <a class="btn btn-primary" id="ctaMail" href="#">Get in touch</a>
+            <a class="btn btn-outline" href="contact.html">Contact page</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer-slot"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/blog-content.js"></script>
+  <script src="assets/store.js"></script>
+  <script src="assets/site.js"></script>
+  <script>
+    function onPageReady() {
+      // arrows
+      ["ar1","ar2","ar3","ar4","ar5"].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = ICON.arrow; });
+
+      // cv + mail links
+      document.getElementById("cvBtn").href = PROFILE.cvUrl;
+      document.getElementById("ctaMail").href = "mailto:" + PROFILE.email;
+
+      // hero social
+      document.getElementById("heroSocial").innerHTML = `
+        <a href="${PROFILE.links.github}" target="_blank" rel="noopener" aria-label="GitHub">${ICON.github}</a>
+        <a href="${PROFILE.links.linkedin}" target="_blank" rel="noopener" aria-label="LinkedIn">${ICON.linkedin}</a>
+        <a href="${PROFILE.links.scholar}" target="_blank" rel="noopener" aria-label="Google Scholar">${ICON.scholar}</a>
+        <a href="mailto:${PROFILE.email}" aria-label="Email">${ICON.mail}</a>`;
+
+      // hero facts
+      document.getElementById("heroFacts").innerHTML = `
+        <div class="fact"><span class="k">${ICON.pin} Based in</span><span class="v">${PROFILE.location}</span></div>
+        <div class="fact"><span class="k">Focus</span><span class="v">CV · NLP · Medical AI</span></div>
+        <div class="fact"><span class="k">Studying</span><span class="v">MS Data Science, UTS</span></div>
+        <div class="fact"><span class="k">Status</span><span class="v"><span class="dot"></span> Open to opportunities</span></div>`;
+
+      // stats
+      document.getElementById("statsRow").innerHTML = STATS.map((s, i) => `
+        <div class="stat reveal" data-delay="${i+1}">
+          <div class="num" data-count="${s.value}" data-suffix="${s.suffix}">0${s.suffix}</div>
+          <div class="label">${s.label}</div>
+          <div class="sub">${s.sub}</div>
+        </div>`).join("");
+
+      // focus
+      document.getElementById("focusGrid").innerHTML = FOCUS_AREAS.map((f, i) => `
+        <div class="focus-item reveal" data-delay="${(i%4)+1}">
+          <div class="fn">${f.name}</div>
+          <div class="fnote">${f.note}</div>
+        </div>`).join("");
+
+      // featured projects
+      const feat = PROJECTS.filter(p => p.featured).slice(0, 4);
+      document.getElementById("featuredProjects").innerHTML = feat.map((p, i) => `
+        <article class="card card-hover pcard reveal" data-delay="${(i%2)+1}">
+          <div class="ph thumb" data-label="${p.id} preview"></div>
+          <div class="body">
+            <div class="top">
+              <span class="tag tag-accent">${p.category}</span>
+              <span class="proj-meta">${p.org}</span>
+            </div>
+            <h3>${p.title}</h3>
+            <p class="desc">${p.short}</p>
+            <div class="tag-row">${p.tech.slice(0,4).map(tagPill).join("")}</div>
+            <div class="foot">
+              <div class="metrics">${p.results.slice(0,2).map(r => `<span class="metric"><b>${r.v}</b> ${r.k}</span>`).join("")}</div>
+              <a class="link-more" href="projects.html">Details ${ICON.arrow}</a>
+            </div>
+          </div>
+        </article>`).join("");
+
+      // publications preview
+      document.getElementById("pubPreview").innerHTML = PUBLICATIONS.slice(0,3).map(p => pubItem(p, { full: false })).join("");
+      initPubLinks(document.getElementById("pubPreview"));
+
+      // blog preview
+      document.getElementById("blogPreview").innerHTML = BLOGS.slice(0,3).map((b, i) => `
+        <a class="card card-hover bcard reveal" data-delay="${(i%3)+1}" href="blog-post.html?id=${b.id}">
+          <div class="ph bthumb" data-label="post cover"></div>
+          <div class="bbody">
+            <span class="bcat">${b.category}</span>
+            <h3>${b.title}</h3>
+            <p class="bsum">${b.summary}</p>
+            <div class="bmeta"><span>${fmtDate(b.date)}</span><span class="dotsep"></span><span>${b.read} min read</span></div>
+            <span class="read-more">Read more ${ICON.arrow}</span>
+          </div>
+        </a>`).join("");
+    }
+  </script>
+</body>
+</html>

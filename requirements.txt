@@ -1,0 +1,9 @@
+pip
+python-dotenv
+ruff
+-e .
+
+# Web backend
+fastapi
+uvicorn[standard]
+email-validator

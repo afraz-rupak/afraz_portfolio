@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(which uvicorn *)",
+      "Bash(python3 -c \"import fastapi; print\\('fastapi', fastapi.__version__\\)\")",
+      "Bash(python3 -c \"import flask; print\\('flask', flask.__version__\\)\")",
+      "Bash(python3 -m pip install --quiet fastapi \"uvicorn[standard]\" email-validator python-dotenv)",
+      "Bash(python3 -c \"import fastapi, uvicorn, email_validator; print\\('fastapi', fastapi.__version__, '| uvicorn ok | email-validator ok'\\)\")",
+      "Bash(python3 -c \"import backend.app; print\\('App imports OK'\\)\")",
+      "Bash(python3 -m backend)",
+      "Bash(curl -s http://127.0.0.1:5173/api/health)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type}\\\\n\" http://127.0.0.1:5173/)",
+      "Bash(curl -s -X POST http://127.0.0.1:5173/api/contact -H \"Content-Type: application/json\" -d '{\"name\":\"Test User\",\"email\":\"test@example.com\",\"subject\":\"Hello\",\"message\":\"This is a test message over ten chars.\"}')",
+      "Bash(curl -s -X POST http://127.0.0.1:5173/api/contact -H \"Content-Type: application/json\" -d '{\"name\":\"Bot\",\"email\":\"bot@example.com\",\"subject\":\"spam\",\"message\":\"buy cheap stuff now!!\",\"company\":\"evilcorp\"}')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" -X POST http://127.0.0.1:5173/api/contact -H \"Content-Type: application/json\" -d '{\"name\":\"X\",\"email\":\"bad\",\"subject\":\"s\",\"message\":\"short\"}')",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://127.0.0.1:5173/api/messages)",
+      "Bash(curl -s http://127.0.0.1:5173/contact.html)",
+      "Bash(curl -s -o /dev/null -w \"data.js %{http_code} | \" http://127.0.0.1:5173/assets/data.js)",
+      "Bash(curl -s -o /dev/null -w \"styles.css %{http_code}\\\\n\" http://127.0.0.1:5173/assets/styles.css)",
+      "Bash(grep -nA6 \"\\\\.hero-portrait\\\\|\\\\.ph\\\\b\\\\|\\\\.ph[ {]\" assets/styles.css assets/pages.css)",
+      "Bash(grep -nA4 \"\\\\.thumb\" assets/pages.css assets/styles.css)",
+      "Bash(cp \"image/Brain Tumor Classification \\(MobileNet-ViT\\).png\" \"portfolio website/assets/img/brain-tumor.png\")",
+      "Bash(cp \"image/AI Dermatologist — Skin Cancer Detection.png\" \"portfolio website/assets/img/skin-cancer.png\")",
+      "Bash(cp \"image/Pneumonia Identification in Chest X-rays.png\" \"portfolio website/assets/img/pneumonia.png\")",
+      "Bash(grep -nA3 \"\\\\.facts\\\\b\\\\|\\\\.fact\\\\b\\\\|\\\\.fact \\\\.k\\\\|\\\\.fact \\\\.v\\\\|\\\\.hero-aside\" assets/pages.css)",
+      "Bash([ -f \"assets/$f\" ])",
+      "Bash(grep -c '\\\\.__TRACKED_VAR__\\\\b' assets/pages.css assets/styles.css)",
+      "Bash(grep -nA3 \"const SKILLS|const EDUCATION|const EXPERIENCE|const PROJECT_CATEGORIES|const BLOG_CATEGORIES|const RESEARCH_INTERESTS|const CURRENT_FOCUS|const PUBLICATIONS\" assets/data.js)",
+      "Bash(grep -c cover: __TRACKED_VAR__/assets/data.js)",
+      "Bash(grep -c '/api/contact\\\\|honeypot\\\\|company' __TRACKED_VAR__/contact.html)",
+      "Bash(grep -c 'facts-line\\\\|fl-item' __TRACKED_VAR__/index.html)",
+      "Bash(grep -n 'hero-portrait\\\\|your headshot\\\\|assets/img' __TRACKED_VAR__/index.html)",
+      "Bash(grep -c 'projThumb\\\\|p.cover\\\\|assets/img' __TRACKED_VAR__/projects.html)",
+      "Bash(cp -R \"portfolio website\" \"portfolio website.bak-premerge\")",
+      "Bash(mkdir -p /tmp/v1ref)",
+      "Bash(cp \"portfolio website/assets/data.js\" /tmp/v1ref/data.js)",
+      "Bash(cp \"portfolio website/index.html\" /tmp/v1ref/index.html)",
+      "Bash(cp \"portfolio website/projects.html\" /tmp/v1ref/projects.html)"
+    ]
+  }
+}

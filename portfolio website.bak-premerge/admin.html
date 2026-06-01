@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Afraz Ul Haque</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/admin.css" />
+</head>
+<body class="admin-body">
+
+  <!-- Auth gate -->
+  <div class="gate" id="gate">
+    <div class="gate-card">
+      <div class="gate-mark" id="gateMark">AH</div>
+      <h1>Dashboard access</h1>
+      <p>Enter your passcode to manage content.</p>
+      <form id="gateForm">
+        <div class="fld">
+          <input type="password" id="gatePass" placeholder="Passcode" autocomplete="current-password" autofocus />
+        </div>
+        <div class="gate-err" id="gateErr">Incorrect passcode. Try again.</div>
+        <button class="btn btn-primary" type="submit" style="width:100%;margin-top:1.1rem">Unlock dashboard</button>
+      </form>
+      <p class="hint">Demo passcode: <code>afraz2025</code> · change it in <code>admin.js</code>. This is a client-side gate for prototyping, not real security.</p>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="side-scrim" id="scrim"></div>
+
+  <!-- Main -->
+  <div class="admin-main">
+    <div class="admin-top">
+      <div style="display:flex;align-items:center;gap:.9rem">
+        <button class="menu-btn" id="menuBtn" aria-label="Menu"></button>
+        <div>
+          <h1 id="secTitle">Overview</h1>
+          <div class="sub" id="secSub">Welcome back</div>
+        </div>
+      </div>
+      <div id="topAction" style="display:flex;gap:.6rem;align-items:center"></div>
+    </div>
+    <div class="admin-content" id="content"></div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 id="modalTitle">Edit</h2>
+      <button class="icon-btn" id="modalClose" aria-label="Close"></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+
+  <div class="toast-wrap" id="toasts"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/blog-content.js"></script>
+  <script src="assets/store.js"></script>
+  <script src="assets/site.js"></script>
+  <script src="assets/admin.js"></script>
+  <script src="assets/admin-collections.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", initAdmin);
+  </script>
+</body>
+</html>
