@@ -30,7 +30,7 @@ const PROFILE = {
 /* Headline stats for the data-rich hero */
 const STATS = [
   { value: 14,  suffix: "",  label: "Publications", sub: "IEEE / Springer" },
-  { value: 38,  suffix: "+", label: "Citations", sub: "ResearchGate" },
+  { value: 155, suffix: "+", label: "Citations", sub: "ResearchGate" },
   { value: 3,   suffix: "",  label: "Production APIs", sub: "99.5% uptime" },
   { value: 3,   suffix: "+", label: "Years in research", sub: "since 2021" },
 ];
@@ -216,7 +216,7 @@ const PROJECT_CATEGORIES = ["All", "Computer Vision", "NLP", "Medical AI", "Mach
 /* ---------- Publication metrics (from ResearchGate / Google Scholar) ---------- */
 const SCHOLAR_METRICS = [
   { value: 14, suffix: "", label: "Publications", sub: "peer-reviewed" },
-  { value: 38, suffix: "", label: "Citations", sub: "and growing" },
+  { value: 155, suffix: "", label: "Citations", sub: "and growing" },
   { value: 2231, suffix: "", label: "Reads", sub: "on ResearchGate" },
   { value: 4, suffix: "", label: "First-author", sub: "lead papers" },
 ];
