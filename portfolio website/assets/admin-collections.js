@@ -244,7 +244,7 @@ RENDERERS.profile = function () {
           ${fieldText("pr_email", "Email", p.email, { type: "email" })}
           ${fieldText("pr_phone", "Phone", p.phone)}
         </div>
-        ${fieldText("pr_cv", "CV URL", p.cvUrl)}
+        <div class="fld" id="cv_block"></div>
         <div class="grid-2c">
           ${fieldText("pr_github", "GitHub", L.github)}
           ${fieldText("pr_linkedin", "LinkedIn", L.linkedin)}
@@ -289,12 +289,57 @@ RENDERERS.profile = function () {
   renderStats();
   document.getElementById("stats_mount").appendChild(statsWrap);
 
+  // CV: hosted URL or an uploaded PDF (embedded as a data URL in this browser)
+  let cvValue = p.cvUrl || "";
+  const isCvFile = (u) => typeof u === "string" && u.slice(0, 5) === "data:";
+  function renderCvBlock() {
+    const wrap = document.getElementById("cv_block");
+    if (!wrap) return;
+    const file = isCvFile(cvValue);
+    wrap.innerHTML = `
+      <label>CV / Resume</label>
+      ${file
+        ? `<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+             <span class="badge">${ICON.doc} Uploaded PDF</span>
+             <a class="mini-btn" href="${cvValue}" target="_blank" rel="noopener">Open</a>
+             <button type="button" class="mini-btn" id="cv_replace">${ICON.download} Replace</button>
+             <button type="button" class="mini-btn" id="cv_remove">${ICON.trash} Remove</button>
+           </div>`
+        : `<input id="cv_url" type="url" value="${escapeAttr(cvValue)}" placeholder="https://… link to a hosted CV" />
+           <div style="margin-top:.6rem"><button type="button" class="mini-btn" id="cv_upload">${ICON.download} Upload PDF</button></div>`}
+      <span class="help">Paste a hosted link, or upload a PDF (stored in this browser). The “CV” buttons across the site use this. Tip: use <b>Export</b> to bake an uploaded CV into the published site.</span>`;
+    const urlInput = document.getElementById("cv_url");
+    if (urlInput) urlInput.addEventListener("input", () => { cvValue = urlInput.value.trim(); });
+    const up = document.getElementById("cv_upload") || document.getElementById("cv_replace");
+    if (up) up.addEventListener("click", pickCv);
+    const rm = document.getElementById("cv_remove");
+    if (rm) rm.addEventListener("click", () => { cvValue = ""; renderCvBlock(); });
+  }
+  function pickCv() {
+    const input = document.createElement("input");
+    input.type = "file"; input.accept = "application/pdf,.pdf"; input.style.display = "none";
+    document.body.appendChild(input);
+    input.addEventListener("change", () => {
+      const f = input.files && input.files[0];
+      if (!f) { input.remove(); return; }
+      if (f.type !== "application/pdf" && !/\.pdf$/i.test(f.name)) { toast("Please choose a PDF file"); input.remove(); return; }
+      if (f.size > 3 * 1024 * 1024) toast("PDF is large (>3MB) — it may not save in the browser");
+      const reader = new FileReader();
+      reader.onload = () => { cvValue = reader.result; renderCvBlock(); toast("CV ready — click Save profile"); };
+      reader.onerror = () => toast("Couldn't read that file");
+      reader.readAsDataURL(f);
+      input.remove();
+    });
+    input.click();
+  }
+  renderCvBlock();
+
   document.getElementById("pr_save").addEventListener("click", () => {
     Object.assign(PROFILE, {
       name: val("pr_name"), shortName: val("pr_short"), initials: val("pr_initials"),
       location: val("pr_location"), title: val("pr_title"),
       summary: val("pr_summary"), longSummary: val("pr_long"), mission: val("pr_mission"),
-      email: val("pr_email"), phone: val("pr_phone"), cvUrl: val("pr_cv"),
+      email: val("pr_email"), phone: val("pr_phone"), cvUrl: cvValue,
     });
     PROFILE.links = Object.assign({}, PROFILE.links, {
       github: val("pr_github"), linkedin: val("pr_linkedin"),

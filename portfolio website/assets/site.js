@@ -273,3 +273,25 @@ document.addEventListener("DOMContentLoaded", () => {
   // run reveals/counters again for any content pages injected
   setTimeout(() => { initReveals(); initCounters(); }, 0);
 });
+
+/* Open data: links (e.g. an uploaded CV PDF) via a blob URL — browsers block
+   navigating straight to a data: URL in a new tab, so convert on click. */
+document.addEventListener("click", (e) => {
+  const a = e.target.closest && e.target.closest('a[href^="data:"]');
+  if (!a) return;
+  e.preventDefault();
+  try {
+    const href = a.getAttribute("href");
+    const comma = href.indexOf(",");
+    const meta = href.slice(5, comma);
+    const data = href.slice(comma + 1);
+    const mime = (meta.split(";")[0]) || "application/octet-stream";
+    const isB64 = /;base64/i.test(meta);
+    const bin = isB64 ? atob(data) : decodeURIComponent(data);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([bytes], { type: mime }));
+    window.open(url, "_blank", "noopener");
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (err) { /* leave the link as-is if conversion fails */ }
+});
