@@ -199,4 +199,7 @@ cython_debug/
 .ruff_cache/
 
 # PyPI configuration file
-.pypirc.claude/settings.local.json
+.pypirc
+
+# Local Claude settings (machine-specific)
+.claude/settings.local.json
