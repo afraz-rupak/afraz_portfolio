@@ -99,6 +99,9 @@
       document.getElementById("aboutMission").textContent = PROFILE.mission;
       document.getElementById("cvBtn").href = PROFILE.cvUrl;
 
+      const aboutPortrait = document.querySelector(".about-portrait");
+      if (aboutPortrait && PROFILE.aboutPhoto) aboutPortrait.src = PROFILE.aboutPhoto;
+
       const strengths = ["Python","PyTorch","TensorFlow","Computer Vision","NLP","Transformers","Explainable AI","Medical Imaging","MLOps","AWS"];
       document.getElementById("aboutStrengths").innerHTML = strengths.map(s => `<span class="tag tag-accent">${s}</span>`).join("");
 

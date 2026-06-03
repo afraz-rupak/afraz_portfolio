@@ -21,7 +21,7 @@ let CURRENT_SECTION = "overview";
 
 /* ---------------- boot ---------------- */
 function initAdmin() {
-  document.getElementById("gateMark").innerHTML = '<img src="assets/img/profile_logo.png" alt="' + PROFILE.shortName + '" />';
+  document.getElementById("gateMark").innerHTML = '<img src="' + (PROFILE.logo || 'assets/img/profile_logo.png') + '" alt="' + PROFILE.shortName + '" />';
 
   // auth
   if (sessionStorage.getItem(AUTH_KEY) === "1") unlock();
@@ -74,7 +74,7 @@ function buildSidebar() {
 
   sb.innerHTML = `
     <a class="brand" href="index.html">
-      <span class="mark"><img src="assets/img/profile_logo.png" alt="${PROFILE.shortName}" /></span>
+      <span class="mark"><img src="${PROFILE.logo || 'assets/img/profile_logo.png'}" alt="${PROFILE.shortName}" /></span>
       <span>${PROFILE.shortName} <span class="mark-sub">/ Admin</span></span>
     </a>
     <div class="side-label">Manage</div>
@@ -136,9 +136,10 @@ function topAction(label, onClick, icon) {
 
 /* ---------------- persistence + toast ---------------- */
 function persist(msg) {
-  Store.save();
+  const ok = Store.save();
   refreshSidebarCounts();
-  toast(msg || "Saved");
+  if (ok) toast(msg || "Saved");
+  else toast("Couldn't save — browser storage is full. Remove a large image, or use Export to bake changes into the site.");
 }
 
 function toast(msg) {
@@ -220,6 +221,63 @@ function fieldToggle(id, label, checked) {
 
 function escapeHtml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 function escapeAttr(s) { return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
+
+/* Image field: upload (auto-compressed) or paste a URL.
+   Returns an element with .getValue() → data URL / URL / "". */
+function imageField(opts) {
+  opts = opts || {};
+  const wrap = document.createElement("div");
+  wrap.className = "fld img-field";
+  let value = opts.value || "";
+  function isUrl(v) { return v && v.slice(0, 5) !== "data:"; }
+  function render() {
+    const has = !!value;
+    wrap.innerHTML = `
+      <label>${opts.label || "Image"}</label>
+      <div class="img-field-row">
+        <div class="img-preview${has ? "" : " empty"}" style="${opts.aspect ? `aspect-ratio:${opts.aspect};` : ""}">
+          ${has ? `<img src="${escapeAttr(value)}" alt="">` : `<span>${ICON.image}</span>`}
+        </div>
+        <div class="img-field-actions">
+          <button type="button" class="mini-btn" data-act="pick">${ICON.image} ${has ? "Replace" : "Upload image"}</button>
+          ${has ? `<button type="button" class="mini-btn" data-act="remove">${ICON.trash} Remove</button>` : ""}
+        </div>
+      </div>
+      <input type="url" class="img-url" placeholder="…or paste an image URL" value="${isUrl(value) ? escapeAttr(value) : ""}">
+      ${opts.help ? `<span class="help">${opts.help}</span>` : ""}`;
+    wrap.querySelector('[data-act="pick"]').addEventListener("click", pick);
+    const rm = wrap.querySelector('[data-act="remove"]');
+    if (rm) rm.addEventListener("click", () => { value = ""; render(); });
+    const url = wrap.querySelector(".img-url");
+    url.addEventListener("input", () => { value = url.value.trim(); refreshPreview(); });
+  }
+  function refreshPreview() {
+    const box = wrap.querySelector(".img-preview");
+    if (!box) return;
+    box.classList.toggle("empty", !value);
+    box.innerHTML = value ? `<img src="${escapeAttr(value)}" alt="">` : `<span>${ICON.image}</span>`;
+  }
+  function pick() {
+    const input = document.createElement("input");
+    input.type = "file"; input.accept = "image/*"; input.style.display = "none";
+    document.body.appendChild(input);
+    input.addEventListener("change", () => {
+      const f = input.files && input.files[0];
+      input.remove();
+      if (!f) return;
+      Store.readImage(f, { mime: opts.mime || "image/jpeg", maxDim: opts.maxDim || 1600, quality: opts.quality || 0.82 })
+        .then((dataUrl) => {
+          if (dataUrl.length > 1.4 * 1024 * 1024) toast("Large image — it may not save. Try a smaller file.");
+          value = dataUrl; render(); if (opts.onChange) opts.onChange(value);
+        })
+        .catch(() => toast("Couldn't read that image"));
+    });
+    input.click();
+  }
+  render();
+  wrap.getValue = () => value;
+  return wrap;
+}
 
 /* Tag editor: returns an element with .getTags() */
 function tagEditor(initial) {
@@ -391,10 +449,13 @@ function blogForm(id) {
         ${fieldText("b_id", "Slug / ID", editing ? editing.id : "", { help: "Leave blank to auto-generate from title", ph: "auto" })}
       </div>
       ${fieldArea("b_summary", "Summary", editing ? editing.summary : "", { ph: "One or two sentences shown on cards." })}
+      <div id="b_cover_mount"></div>
       <div class="fld"><label>Tags</label><div id="b_tags_mount"></div></div>
       ${fieldArea("b_body", "Article body (HTML)", editing ? editing.body || "" : "", { tall: true, help: "Use <h2 id=\"…\">, <p>, <ul>, <blockquote>, <code>. Headings build the table of contents." })}
     `,
     onMount: () => {
+      const cover = imageField({ label: "Cover image", value: editing ? editing.cover || "" : "", aspect: "16/9", help: "Shown at the top of the article and on blog cards." });
+      document.getElementById("b_cover_mount").appendChild(cover); blogForm._cover = cover;
       const te = tagEditor(editing ? editing.tags : []);
       document.getElementById("b_tags_mount").appendChild(te);
       blogForm._tags = te;
@@ -409,6 +470,7 @@ function blogForm(id) {
         date: val("b_date") || new Date().toISOString().slice(0, 10),
         read: parseInt(val("b_read"), 10) || 5,
         summary: val("b_summary"),
+        cover: blogForm._cover.getValue() || null,
         tags: blogForm._tags.getTags(),
         body: val("b_body"),
       };

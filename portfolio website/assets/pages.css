@@ -296,11 +296,14 @@
 
 /* ---------- ARTICLE / blog post ---------- */
 .article-hero { padding-top: clamp(2.5rem, 5vw, 4rem); padding-bottom: clamp(1.5rem, 3vw, 2.5rem); }
-.article-back { display: inline-flex; align-items: center; gap: .45rem; color: var(--text-muted); font-size: .9rem; font-weight: 500; margin-bottom: 1.6rem; transition: color .2s; }
-.article-back svg { width: 1rem; height: 1rem; transform: rotate(180deg); }
+.article-back { display: inline-flex; width: fit-content; align-items: center; gap: .45rem; color: var(--text-muted); font-size: .9rem; font-weight: 500; margin-bottom: 1.4rem; transition: color .2s; }
+.article-back svg { width: 1rem; height: 1rem; flex-shrink: 0; transform: rotate(180deg); }
 .article-back:hover { color: var(--accent); }
+.article-hero .bcat { display: block; }
 .article-hero h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); margin: 1rem 0 1.1rem; letter-spacing: -.03em; max-width: 20ch; }
 .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; color: var(--text-faint); font-size: .9rem; }
+.article-meta svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+.article-meta > span { white-space: nowrap; }
 .article-meta .dotsep { width: 3px; height: 3px; border-radius: 50%; background: currentColor; }
 .article-author { display: inline-flex; align-items: center; gap: .6rem; }
 .article-author .av { width: 2rem; height: 2rem; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-family: "Space Grotesk"; font-weight: 700; font-size: .8rem; }

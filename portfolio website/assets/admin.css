@@ -76,6 +76,7 @@
 .list-row:last-child { border-bottom: 0; }
 .list-row:hover { background: var(--bg-3); }
 .list-row .ix { font-family: "Space Grotesk"; color: var(--text-faint); font-size: .85rem; min-width: 1.5rem; }
+.list-row .ix svg { width: 1.15rem; height: 1.15rem; }
 .list-row .rtitle { font-weight: 600; font-size: 1rem; }
 .list-row .rmeta { color: var(--text-faint); font-size: .83rem; margin-top: .2rem; display: flex; flex-wrap: wrap; gap: .4rem .7rem; align-items: center; }
 .list-row .rmeta .dotsep { width: 3px; height: 3px; border-radius: 50%; background: currentColor; display: inline-block; }
@@ -91,6 +92,11 @@
 .pill-cat { background: var(--accent-soft); color: var(--accent); }
 
 .empty { padding: 3rem 1.3rem; text-align: center; color: var(--text-faint); }
+
+/* link-more (used in panel headers) — pages.css isn't loaded here */
+.link-more { display: inline-flex; align-items: center; gap: .4rem; color: var(--accent); font-weight: 500; font-size: .92rem; cursor: pointer; }
+.link-more svg { width: 1.05rem; height: 1.05rem; flex-shrink: 0; transition: transform .2s; }
+.link-more:hover svg { transform: translateX(3px); }
 
 /* ---------- Modal ---------- */
 .modal-backdrop { position: fixed; inset: 0; z-index: 200; background: color-mix(in oklab, #000 60%, transparent); backdrop-filter: blur(3px); opacity: 0; pointer-events: none; transition: opacity .25s; }
@@ -146,6 +152,16 @@
 .mini-btn { display: inline-flex; align-items: center; gap: .35rem; padding: .5rem .8rem; border-radius: 8px; border: 1px dashed var(--border-strong); background: transparent; color: var(--text-muted); font-size: .85rem; font-weight: 500; }
 .mini-btn:hover { color: var(--text); border-color: var(--text-faint); }
 .mini-btn svg { width: .95rem; height: .95rem; }
+.mini-btn { cursor: pointer; }
+
+/* image field */
+.img-field-row { display: flex; gap: 1rem; align-items: flex-start; }
+.img-preview { width: 120px; flex: none; aspect-ratio: 16/9; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; background: var(--bg-2); display: grid; place-items: center; }
+.img-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-preview.empty { border-style: dashed; }
+.img-preview.empty svg { width: 1.6rem; height: 1.6rem; color: var(--text-faint); }
+.img-field-actions { display: flex; flex-direction: column; gap: .5rem; padding-top: .2rem; }
+.img-field .img-url { margin-top: .7rem; }
 
 /* export */
 .export-area { width: 100%; min-height: 320px; font-family: "Space Grotesk", monospace; font-size: .82rem; line-height: 1.6; padding: 1.1rem; border-radius: 12px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text-muted); resize: vertical; }

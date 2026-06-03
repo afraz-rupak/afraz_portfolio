@@ -86,7 +86,7 @@
       <p class="sub">Set how your story appears on the blog. You can edit any of this later from the dashboard.</p>
 
       <div class="pub-preview">
-        <div class="ph" data-label="cover — add in dashboard"></div>
+        <div class="ph" id="pubPrevCover" data-label="add a cover"></div>
         <div class="pp-body">
           <span class="pp-cat" id="pubPrevCat">Category</span>
           <h3 id="pubPrevTitle">Untitled</h3>
@@ -94,6 +94,15 @@
         </div>
       </div>
 
+      <div class="efld">
+        <label>Cover image</label>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <button type="button" class="btn btn-outline" id="pubCoverPick" style="font-size:.85rem;padding:.5rem .9rem"></button>
+          <button type="button" class="btn btn-ghost" id="pubCoverRemove" style="font-size:.85rem;padding:.5rem .9rem;display:none">Remove</button>
+        </div>
+        <input type="url" id="pubCoverUrl" placeholder="…or paste an image URL" style="margin-top:.6rem" />
+        <span class="help">Shown at the top of the article and on blog cards. Upload (auto-compressed) or paste a URL.</span>
+      </div>
       <div class="efld">
         <label for="pubCategory">Category</label>
         <select id="pubCategory"></select>

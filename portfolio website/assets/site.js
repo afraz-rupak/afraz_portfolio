@@ -73,14 +73,18 @@ function renderHeader() {
   <header class="site-header" id="siteHeader">
     <div class="container nav">
       <a class="brand" href="index.html">
-        <span class="mark"><img src="assets/img/profile_logo.png" alt="${PROFILE.shortName}" /></span>
+        <span class="mark"><img src="${PROFILE.logo || 'assets/img/profile_logo.png'}" alt="${PROFILE.shortName}" /></span>
         <span>${PROFILE.shortName} Ul Haque <span class="mark-sub">/ ML</span></span>
       </a>
       <nav aria-label="Primary">
         <ul class="nav-links" id="navLinks">${links}</ul>
       </nav>
       <div class="nav-actions">
-        <a class="btn btn-primary" href="${PROFILE.cvUrl}" target="_blank" rel="noopener" style="--hide:1">${ICON.download}<span class="cv-label">CV</span></a>
+        <a class="btn btn-primary nav-cv" href="${PROFILE.cvUrl}" target="_blank" rel="noopener">${ICON.download}<span class="cv-label">CV</span></a>
+        <div class="auth-wrap">
+          <button class="theme-toggle auth-btn" id="authBtn" aria-label="Admin account" aria-haspopup="true" aria-expanded="false">${ICON.user}</button>
+          <div class="auth-menu" id="authMenu" role="menu"></div>
+        </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle colour theme">${ICON.moon}${ICON.sun}</button>
         <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">${ICON.menu}</button>
       </div>
@@ -97,7 +101,7 @@ function renderFooter() {
       <div class="footer-grid">
         <div class="footer-brand">
           <a class="brand" href="index.html">
-            <span class="mark"><img src="assets/img/profile_logo.png" alt="${PROFILE.shortName}" /></span>
+            <span class="mark"><img src="${PROFILE.logo || 'assets/img/profile_logo.png'}" alt="${PROFILE.shortName}" /></span>
             <span>${PROFILE.name}</span>
           </a>
           <p>${PROFILE.summary}</p>
@@ -143,6 +147,9 @@ function mountChrome() {
     applyTheme(cur === "dark" ? "light" : "dark");
   });
 
+  // admin auth control
+  setupAuthControl();
+
   // mobile menu
   const nt = document.getElementById("navToggle");
   const nl = document.getElementById("navLinks");
@@ -166,6 +173,48 @@ function mountChrome() {
   const onScroll = () => hdr && hdr.classList.toggle("scrolled", window.scrollY > 8);
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+}
+
+/* ---------- Admin auth control (navbar) ---------- */
+const ADMIN_SESSION_KEY = "afraz-admin-session";
+function isAdminLoggedIn() {
+  try { return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1"; } catch (e) { return false; }
+}
+function setupAuthControl() {
+  const btn = document.getElementById("authBtn");
+  const menu = document.getElementById("authMenu");
+  if (!btn || !menu) return;
+
+  function refresh() {
+    const logged = isAdminLoggedIn();
+    btn.classList.toggle("is-auth", logged);
+    btn.title = logged ? "Admin account" : "Admin login";
+    menu.innerHTML = logged
+      ? `<div class="auth-head"><span class="auth-av">${PROFILE.initials}</span><div><div class="auth-name">${PROFILE.shortName} Ul Haque</div><div class="auth-role">Signed in · Admin</div></div></div>
+         <a class="auth-item" href="admin.html">${ICON.grid} Dashboard</a>
+         <a class="auth-item" href="editor.html">${ICON.edit} Write a post</a>
+         <button class="auth-item danger" id="authLogout">${ICON.logout} Log out</button>`
+      : `<div class="auth-head"><span class="auth-av muted">${ICON.user}</span><div><div class="auth-name">Admin</div><div class="auth-role">Not signed in</div></div></div>
+         <a class="auth-item" href="admin.html">${ICON.logout} Log in</a>`;
+    const lo = document.getElementById("authLogout");
+    if (lo) lo.addEventListener("click", () => {
+      try { sessionStorage.removeItem(ADMIN_SESSION_KEY); } catch (e) {}
+      closeMenu(); refresh();
+    });
+  }
+  function openMenu() { menu.classList.add("open"); btn.setAttribute("aria-expanded", "true"); }
+  function closeMenu() { menu.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); }
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    // Logged out → jump straight to the login page; logged in → toggle the menu
+    if (!isAdminLoggedIn()) { location.href = "admin.html"; return; }
+    menu.classList.contains("open") ? closeMenu() : openMenu();
+  });
+  document.addEventListener("click", (e) => { if (!menu.contains(e.target) && e.target !== btn) closeMenu(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
+
+  refresh();
 }
 
 function initReveals() {
@@ -217,6 +266,14 @@ function fmtDate(iso) {
   return d.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" });
 }
 function tagPill(t) { return `<span class="tag">${t}</span>`; }
+
+/* Cover box: an <img> when a source is set, else the striped placeholder.
+   `cls` is the layout class (bthumb / fp-thumb / article-cover). */
+function coverBox(src, cls, label, alt) {
+  return src
+    ? `<div class="${cls}" style="overflow:hidden"><img src="${src}" alt="${(alt || "").replace(/"/g, "&quot;")}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>`
+    : `<div class="ph ${cls}" data-label="${label || "cover"}"></div>`;
+}
 
 /* Render an author list with the profile owner highlighted */
 function fmtAuthors(authors) {

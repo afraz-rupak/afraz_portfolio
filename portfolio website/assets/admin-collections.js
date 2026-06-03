@@ -43,6 +43,7 @@ function projectForm(id) {
         ${fieldText("p_org", "Organisation / context", editing ? editing.org : "")}
       </div>
       ${fieldArea("p_short", "Short description", editing ? editing.short : "", { ph: "One-line summary for cards." })}
+      <div id="p_cover_mount"></div>
       ${fieldArea("p_problem", "Problem", editing ? editing.problem : "")}
       <div class="grid-2c">
         ${fieldText("p_dataset", "Dataset", editing ? editing.dataset : "")}
@@ -61,6 +62,8 @@ function projectForm(id) {
       </div>
     `,
     onMount: () => {
+      const cover = imageField({ label: "Cover image", value: editing ? editing.cover || "" : "", aspect: "16/9", help: "Shown on project cards and in the detail drawer. Upload (auto-compressed) or paste a URL." });
+      document.getElementById("p_cover_mount").appendChild(cover); projectForm._cover = cover;
       const tech = tagEditor(editing ? editing.tech : []);
       document.getElementById("p_tech_mount").appendChild(tech); projectForm._tech = tech;
       const res = kvEditor(editing ? editing.results : [], "Metric", "Value");
@@ -74,6 +77,7 @@ function projectForm(id) {
         title, category: val("p_cat"), org: val("p_org"),
         featured: document.getElementById("p_featured").checked,
         short: val("p_short"), problem: val("p_problem"),
+        cover: projectForm._cover.getValue() || null,
         dataset: val("p_dataset"), method: val("p_method"),
         tech: projectForm._tech.getTags(),
         results: projectForm._res.getRows(),
@@ -238,6 +242,16 @@ RENDERERS.profile = function () {
       </div>
     </div>
     <div class="panel" style="margin-bottom:1.5rem">
+      <div class="panel-head"><h2>Images &amp; branding</h2><span class="sub" style="color:var(--text-faint);font-size:.83rem">Photos and logo used across the site</span></div>
+      <div style="padding:1.3rem;display:grid;gap:1.4rem">
+        <div class="grid-2c">
+          <div id="pr_photo_mount"></div>
+          <div id="pr_aboutphoto_mount"></div>
+        </div>
+        <div id="pr_logo_mount"></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-bottom:1.5rem">
       <div class="panel-head"><h2>Contact &amp; links</h2></div>
       <div style="padding:1.3rem;display:grid;gap:1.1rem">
         <div class="grid-2c">
@@ -288,6 +302,14 @@ RENDERERS.profile = function () {
   }
   renderStats();
   document.getElementById("stats_mount").appendChild(statsWrap);
+
+  // images & branding
+  const photoField = imageField({ label: "Home hero photo", value: p.photo || "", aspect: "4/5", mime: "image/jpeg", help: "Portrait on the home page. Falls back to assets/img/profile.png." });
+  const aboutField = imageField({ label: "About page photo", value: p.aboutPhoto || "", aspect: "4/5", mime: "image/jpeg", help: "Portrait on the About page. Falls back to assets/img/about.png." });
+  const logoField = imageField({ label: "Logo", value: p.logo || "", aspect: "1/1", mime: "image/png", maxDim: 256, help: "Mark shown in the nav, footer and admin. Use a square PNG (transparency kept). Falls back to assets/img/profile_logo.png." });
+  document.getElementById("pr_photo_mount").appendChild(photoField);
+  document.getElementById("pr_aboutphoto_mount").appendChild(aboutField);
+  document.getElementById("pr_logo_mount").appendChild(logoField);
 
   // CV: hosted URL or an uploaded PDF (embedded as a data URL in this browser)
   let cvValue = p.cvUrl || "";
@@ -340,6 +362,7 @@ RENDERERS.profile = function () {
       location: val("pr_location"), title: val("pr_title"),
       summary: val("pr_summary"), longSummary: val("pr_long"), mission: val("pr_mission"),
       email: val("pr_email"), phone: val("pr_phone"), cvUrl: cvValue,
+      photo: photoField.getValue() || "", aboutPhoto: aboutField.getValue() || "", logo: logoField.getValue() || "",
     });
     PROFILE.links = Object.assign({}, PROFILE.links, {
       github: val("pr_github"), linkedin: val("pr_linkedin"),

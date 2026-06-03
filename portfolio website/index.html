@@ -138,6 +138,10 @@
       // arrows
       ["ar1","ar2","ar3","ar4","ar5"].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = ICON.arrow; });
 
+      // hero portrait (admin-uploaded photo overrides the default)
+      const heroPortrait = document.querySelector(".hero-portrait");
+      if (heroPortrait && PROFILE.photo) heroPortrait.src = PROFILE.photo;
+
       // cv + mail links
       document.getElementById("cvBtn").href = PROFILE.cvUrl;
       document.getElementById("ctaMail").href = "mailto:" + PROFILE.email;
@@ -205,7 +209,7 @@
       // blog preview
       document.getElementById("blogPreview").innerHTML = BLOGS.slice(0,3).map((b, i) => `
         <a class="card card-hover bcard reveal" data-delay="${(i%3)+1}" href="blog-post.html?id=${b.id}">
-          <div class="ph bthumb" data-label="post cover"></div>
+          ${coverBox(b.cover, "bthumb", "post cover", b.title)}
           <div class="bbody">
             <span class="bcat">${b.category}</span>
             <h3>${b.title}</h3>

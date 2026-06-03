@@ -89,8 +89,46 @@ const Store = (function () {
       .replace(/-+/g, "-").slice(0, 60) || ("post-" + Date.now());
   }
 
+  /* ---------- Image helper ----------
+     Reads an image file, downscales it on a canvas and returns a compressed
+     data URL so it stays small enough for localStorage. SVGs are kept as-is
+     (vector). Returns a Promise<string>. Used by the admin + the editor. */
+  function readImage(file, opts) {
+    opts = opts || {};
+    return new Promise((resolve, reject) => {
+      if (!file) return reject(new Error("No file"));
+      const isImg = /^image\//.test(file.type) || /\.(png|jpe?g|gif|webp|svg)$/i.test(file.name || "");
+      if (!isImg) return reject(new Error("Not an image"));
+      const reader = new FileReader();
+      reader.onerror = () => reject(reader.error || new Error("Read failed"));
+      reader.onload = () => {
+        // Keep vector/animated formats untouched.
+        if (/svg|gif/i.test(file.type)) { resolve(reader.result); return; }
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const maxDim = opts.maxDim || 1600;
+            let w = img.naturalWidth || img.width;
+            let h = img.naturalHeight || img.height;
+            const scale = Math.min(1, maxDim / Math.max(w, h));
+            w = Math.max(1, Math.round(w * scale));
+            h = Math.max(1, Math.round(h * scale));
+            const canvas = document.createElement("canvas");
+            canvas.width = w; canvas.height = h;
+            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            const mime = opts.mime || "image/jpeg";
+            resolve(canvas.toDataURL(mime, opts.quality || 0.82));
+          } catch (e) { resolve(reader.result); }
+        };
+        img.onerror = () => resolve(reader.result);
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   // hydrate immediately so the live site reflects saved edits
   hydrate();
 
-  return { hydrate, save, reset, hasOverrides, generateDataJs, collections, slug, setArr, KEY };
+  return { hydrate, save, reset, hasOverrides, generateDataJs, collections, slug, setArr, KEY, readImage };
 })();

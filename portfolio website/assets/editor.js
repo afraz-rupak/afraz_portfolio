@@ -11,6 +11,7 @@
   let editing = null;          // existing BLOGS entry when editing
   let saveTimer = null;
   let dirty = false;
+  let pubCover = "";           // staged cover image for the publish panel
 
   const $ = (id) => document.getElementById(id);
 
@@ -76,6 +77,7 @@
         read: editing.read,
         tags: (editing.tags || []).slice(),
         summary: editing.summary || "",
+        cover: editing.cover || "",
         id: editing.id,
       };
     } else {
@@ -354,6 +356,13 @@
     pubTags = makeTags(m.tags || []);
     mount.appendChild(pubTags.el);
 
+    // cover image
+    pubCover = m.cover || (editing && editing.cover) || "";
+    renderCover();
+    $("pubCoverPick").onclick = pickCover;
+    $("pubCoverRemove").onclick = () => { pubCover = ""; $("pubCoverUrl").value = ""; renderCover(); };
+    $("pubCoverUrl").oninput = () => { pubCover = $("pubCoverUrl").value.trim(); renderCover(true); };
+
     // preview
     $("pubPrevTitle").textContent = title;
     $("pubPrevCat").textContent = $("pubCategory").value;
@@ -372,7 +381,44 @@
     $("pubBackdrop").classList.remove("open");
   }
 
+  function renderCover(keepUrl) {
+    if (editor._meta) editor._meta.cover = pubCover;
+    const box = $("pubPrevCover");
+    const has = !!pubCover;
+    if (box) {
+      if (has) {
+        box.classList.remove("ph");
+        box.removeAttribute("data-label");
+        box.style.aspectRatio = "16/9";
+        box.innerHTML = `<img src="${escapeAttr(pubCover)}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`;
+      } else {
+        box.classList.add("ph");
+        box.style.aspectRatio = "";
+        box.setAttribute("data-label", "add a cover");
+        box.innerHTML = "";
+      }
+    }
+    $("pubCoverPick").textContent = has ? "Replace image" : "Upload image";
+    $("pubCoverRemove").style.display = has ? "" : "none";
+    if (!keepUrl) { const u = $("pubCoverUrl"); if (u) u.value = (has && pubCover.slice(0, 5) !== "data:") ? pubCover : ""; }
+  }
+  function pickCover() {
+    const input = document.createElement("input");
+    input.type = "file"; input.accept = "image/*"; input.style.display = "none";
+    document.body.appendChild(input);
+    input.addEventListener("change", () => {
+      const f = input.files && input.files[0];
+      input.remove();
+      if (!f) return;
+      Store.readImage(f, { mime: "image/jpeg", maxDim: 1600, quality: 0.82 })
+        .then((d) => { if (d.length > 1.4 * 1024 * 1024) toast("Large image — it may not save"); pubCover = d; renderCover(); })
+        .catch(() => toast("Couldn't read that image"));
+    });
+    input.click();
+  }
+
   function doPublish() {
+    const wasEditing = !!editing;
     const title = $("edTitle").innerText.trim();
     const body = $("edBody").innerHTML;
     const data = {
@@ -383,6 +429,7 @@
       read: parseInt($("pubRead").value, 10) || estimateRead(),
       summary: $("pubSummary").value.trim() || autoSummary(),
       tags: pubTags.get(),
+      cover: pubCover || null,
       body,
     };
 
@@ -394,7 +441,16 @@
       editing = BLOGS[0];
       editor._meta.id = data.id;
     }
-    Store.save();
+    const ok = Store.save();
+    if (!ok) {
+      // roll the in-memory insert back so the list stays consistent
+      if (!wasEditing) {
+        const i = BLOGS.findIndex((b) => b.id === data.id); if (i >= 0) BLOGS.splice(i, 1);
+        editing = null; if (editor._meta) delete editor._meta.id;
+      }
+      toast("Couldn't publish — storage is full. Try a smaller cover image, or remove images.");
+      return;
+    }
     try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
     closePublish();
     toast("Published — opening your story…");

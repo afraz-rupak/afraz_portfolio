@@ -59,7 +59,7 @@
     function blogCard(b, i) {
       return `
         <a class="card card-hover bcard reveal" data-delay="${(i%3)+1}" href="blog-post.html?id=${b.id}">
-          <div class="ph bthumb" data-label="post cover"></div>
+          ${coverBox(b.cover, "bthumb", "post cover", b.title)}
           <div class="bbody">
             <span class="bcat">${b.category}</span>
             <h3>${b.title}</h3>
@@ -80,7 +80,7 @@
     function onPageReady() {
       const f = BLOGS[0];
       document.getElementById("featurePost").innerHTML = `
-        <div class="ph fp-thumb" data-label="featured cover"></div>
+        ${coverBox(f.cover, "fp-thumb", "featured cover", f.title)}
         <div class="fp-body">
           <span class="bcat" style="color:var(--accent);font-family:'Space Grotesk';font-size:.76rem;letter-spacing:.08em;text-transform:uppercase">Featured · ${f.category}</span>
           <h2>${f.title}</h2>

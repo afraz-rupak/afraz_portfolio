@@ -85,7 +85,7 @@
               <span class="dotsep"></span>
               <span style="display:inline-flex;align-items:center;gap:.35rem">${ICON.clock} ${post.read} min read</span>
             </div>
-            <div class="ph article-cover" data-label="article cover"></div>
+            ${coverBox(post.cover, "article-cover", "article cover", post.title)}
           </div>
         </section>
 
@@ -125,7 +125,7 @@
             <div class="blog-grid">
               ${relatedFallback.map((b, i) => `
                 <a class="card card-hover bcard reveal" data-delay="${(i%3)+1}" href="blog-post.html?id=${b.id}">
-                  <div class="ph bthumb" data-label="post cover"></div>
+                  ${coverBox(b.cover, "bthumb", "post cover", b.title)}
                   <div class="bbody">
                     <span class="bcat">${b.category}</span>
                     <h3>${b.title}</h3>

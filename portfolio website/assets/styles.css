@@ -157,6 +157,8 @@ button { font: inherit; cursor: pointer; }
 }
 
 .nav-actions { display: flex; align-items: center; gap: .6rem; }
+.nav-cv { height: 2.4rem; padding: 0 .95rem; border-radius: 9px; font-size: .9rem; gap: .4rem; }
+.nav-cv svg { width: 1rem; height: 1rem; }
 
 .theme-toggle {
   width: 2.4rem; height: 2.4rem; border-radius: 9px;
@@ -172,6 +174,41 @@ button { font: inherit; cursor: pointer; }
 [data-theme="light"] .theme-toggle .icon-moon { display: none; }
 
 .nav-toggle { display: none; }
+
+/* ---------- Admin auth control ---------- */
+.auth-wrap { position: relative; display: flex; }
+.auth-btn { position: relative; }
+.auth-btn svg { width: 1.2rem; height: 1.2rem; }
+.auth-btn.is-auth { color: var(--text); border-color: var(--border-strong); }
+.auth-btn.is-auth::after {
+  content: ""; position: absolute; top: -2px; right: -2px;
+  width: .55rem; height: .55rem; border-radius: 50%;
+  background: var(--accent-2); border: 2px solid var(--bg);
+}
+.auth-menu {
+  position: absolute; top: calc(100% + .6rem); right: 0; z-index: 120;
+  min-width: 230px; padding: .45rem;
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: var(--shadow);
+  opacity: 0; transform: translateY(-6px); pointer-events: none;
+  transition: opacity .2s, transform .2s;
+}
+.auth-menu.open { opacity: 1; transform: none; pointer-events: auto; }
+.auth-head { display: flex; align-items: center; gap: .7rem; padding: .5rem .6rem .7rem; border-bottom: 1px solid var(--border); margin-bottom: .4rem; }
+.auth-av { width: 2.2rem; height: 2.2rem; border-radius: 50%; flex-shrink: 0; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: .8rem; }
+.auth-av.muted { background: var(--bg-3); color: var(--text-faint); }
+.auth-av.muted svg { width: 1.1rem; height: 1.1rem; }
+.auth-name { font-weight: 600; font-size: .9rem; }
+.auth-role { font-size: .76rem; color: var(--text-faint); }
+.auth-item {
+  display: flex; align-items: center; gap: .65rem; width: 100%;
+  padding: .6rem .65rem; border-radius: 8px; border: 0; background: transparent;
+  color: var(--text-muted); font: inherit; font-size: .9rem; font-weight: 500;
+  text-align: left; cursor: pointer; transition: color .2s, background .2s;
+}
+.auth-item:hover { color: var(--text); background: var(--bg-3); }
+.auth-item svg { width: 1.05rem; height: 1.05rem; flex-shrink: 0; }
+.auth-item.danger:hover { color: oklch(0.7 0.18 25); }
 
 /* mobile menu */
 @media (max-width: 880px) {
