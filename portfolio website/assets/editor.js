@@ -26,9 +26,12 @@
 
     buildChrome();
     loadContent();
+    renderMathBlocks($("edBody"));
     wireEditor();
     wireToolbar();
+    wireRibbon();
     wirePlus();
+    wireMathEditing();
     wirePublish();
     wireMore();
 
@@ -59,6 +62,10 @@
     const pm = $("plusMenu");
     setIcon(pm, '[data-insert="image"]', ICON.image);
     setIcon(pm, '[data-insert="code"]', ICON.code);
+    setIcon(pm, '[data-insert="equation"]',
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5H9.5a2.5 2.5 0 0 0-2.46 2.04L5 19M4 12h7"/></svg>');
+    setIcon(pm, '[data-insert="table"]',
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 10h18M3 15h18M9 4v16M15 4v16"/></svg>');
     setIcon(pm, '[data-insert="embed"]', ICON.embed);
     setIcon(pm, '[data-insert="divider"]', ICON.divider);
   }
@@ -102,7 +109,7 @@
   function refreshEmpty() {
     const t = $("edTitle"), b = $("edBody");
     t.classList.toggle("is-empty", t.textContent.trim() === "");
-    const bodyEmpty = b.textContent.trim() === "" && !b.querySelector("img, hr, pre");
+    const bodyEmpty = b.textContent.trim() === "" && !b.querySelector("img, hr, pre, table, .ed-math");
     b.classList.toggle("is-empty", bodyEmpty);
   }
 
@@ -125,7 +132,7 @@
     body.addEventListener("keyup", updatePlus);
     body.addEventListener("mouseup", updatePlus);
     body.addEventListener("focus", updatePlus);
-    document.addEventListener("selectionchange", () => { updateToolbar(); updatePlus(); });
+    document.addEventListener("selectionchange", () => { saveRange(); updateToolbar(); updateRibbon(); updatePlus(); });
     window.addEventListener("scroll", () => { positionPlus(); positionToolbar(); }, { passive: true });
     window.addEventListener("resize", () => { positionPlus(); positionToolbar(); });
   }
@@ -180,6 +187,106 @@
     // link popover
     $("linkApply").addEventListener("mousedown", (e) => { e.preventDefault(); applyLink(); });
     $("linkInput").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); applyLink(); } });
+  }
+
+  /* ---------- persistent formatting ribbon (Word-style) ---------- */
+  let lastRange = null;
+  function saveRange() {
+    const sel = window.getSelection();
+    if (sel.rangeCount && $("edBody").contains(sel.anchorNode)) lastRange = sel.getRangeAt(0).cloneRange();
+  }
+  function restoreRange() {
+    $("edBody").focus();
+    if (lastRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(lastRange); }
+  }
+  // Run an execCommand against the editor selection, then refresh state.
+  function exec(cmd, val) {
+    restoreRange();
+    try { document.execCommand(cmd, false, val == null ? null : val); } catch (e) {}
+    saveRange();
+    refreshEmpty(); markDirty(); updateRibbon(); updateToolbar();
+  }
+  // Like exec(), but emits inline CSS (used for indent/outdent so they apply a
+  // margin instead of wrapping the text in a quote-styled <blockquote>).
+  function execCss(cmd, val) {
+    restoreRange();
+    try { document.execCommand("styleWithCSS", false, true); } catch (e) {}
+    try { document.execCommand(cmd, false, val == null ? null : val); } catch (e) {}
+    try { document.execCommand("styleWithCSS", false, false); } catch (e) {}
+    saveRange();
+    refreshEmpty(); markDirty(); updateRibbon(); updateToolbar();
+  }
+  // Highlight needs styleWithCSS in some browsers; fall back to backColor.
+  function execHighlight(color) {
+    restoreRange();
+    try { document.execCommand("styleWithCSS", false, true); } catch (e) {}
+    let ok = false;
+    try { ok = document.execCommand("hiliteColor", false, color); } catch (e) {}
+    if (!ok) { try { document.execCommand("backColor", false, color); } catch (e) {} }
+    try { document.execCommand("styleWithCSS", false, false); } catch (e) {}
+    saveRange();
+    markDirty(); updateRibbon();
+  }
+
+  function wireRibbon() {
+    const tb = $("edToolbar");
+    if (!tb) return;
+    tb.querySelectorAll("[data-cmd]").forEach((b) => {
+      b.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        const cmd = b.dataset.cmd;
+        if (cmd === "createLink") { openLinkPop(); return; }
+        if (cmd === "indent" || cmd === "outdent") { execCss(cmd); return; }
+        exec(cmd, b.dataset.val);
+      });
+    });
+    tb.querySelectorAll("[data-insert]").forEach((b) => {
+      b.addEventListener("mousedown", (e) => { e.preventDefault(); restoreRange(); insertBlock(b.dataset.insert); });
+    });
+
+    const block = $("tbBlock");
+    block.addEventListener("mousedown", saveRange);
+    block.addEventListener("change", () => exec("formatBlock", block.value));
+
+    const font = $("tbFont");
+    font.addEventListener("mousedown", saveRange);
+    font.addEventListener("change", () => { if (font.value) exec("fontName", font.value); font.selectedIndex = 0; });
+
+    const size = $("tbSize");
+    size.addEventListener("mousedown", saveRange);
+    size.addEventListener("change", () => { if (size.value) exec("fontSize", size.value); size.selectedIndex = 0; });
+
+    const fore = $("tbFore"), back = $("tbBack");
+    fore.addEventListener("mousedown", saveRange);
+    fore.addEventListener("input", () => { exec("foreColor", fore.value); setBar(fore); });
+    back.addEventListener("mousedown", saveRange);
+    back.addEventListener("input", () => { execHighlight(back.value); setBar(back); });
+
+    // Sit the sticky ribbon flush beneath the top bar, whatever its height.
+    const place = () => { tb.style.top = $("edTop").offsetHeight + "px"; };
+    place();
+    window.addEventListener("resize", place);
+  }
+  function setBar(input) {
+    const bar = input.parentNode.querySelector(".bar");
+    if (bar) bar.style.background = input.value;
+  }
+  // Reflect current selection state in the ribbon (active toggles + block style).
+  const TOGGLE_CMDS = ["bold", "italic", "underline", "strikeThrough", "superscript", "subscript",
+    "insertUnorderedList", "insertOrderedList", "justifyLeft", "justifyCenter", "justifyRight", "justifyFull"];
+  function updateRibbon() {
+    const tb = $("edToolbar");
+    if (!tb || !$("edBody").contains(window.getSelection().anchorNode)) return;
+    tb.querySelectorAll("[data-cmd]").forEach((b) => {
+      if (TOGGLE_CMDS.includes(b.dataset.cmd)) {
+        let on = false; try { on = document.queryCommandState(b.dataset.cmd); } catch (e) {}
+        b.classList.toggle("active", on);
+      }
+    });
+    const blk = currentBlock();
+    const tag = blk && blk.tagName ? blk.tagName.toLowerCase() : "p";
+    const sel = $("tbBlock");
+    if (sel) sel.value = ["h2", "h3", "blockquote", "pre"].includes(tag) ? tag : "p";
   }
 
   let savedRange = null;
@@ -275,6 +382,25 @@
       pickLocalImage();
     } else if (type === "code") {
       document.execCommand("insertHTML", false, `<pre><code>// your code here</code></pre><p><br></p>`);
+    } else if (type === "equation") {
+      const tex = prompt("Enter the equation in LaTeX:", "E = mc^2");
+      if (tex && tex.trim()) {
+        // LaTeX is stored in data-tex (survives contenteditable intact) and rendered for display.
+        document.execCommand("insertHTML", false,
+          `<p class="ed-math" contenteditable="false" data-tex="${escapeAttr(tex.trim())}"></p><p><br></p>`);
+        renderMathBlocks($("edBody"));
+      }
+    } else if (type === "table") {
+      let cols = parseInt(prompt("How many columns?", "3"), 10);
+      let rows = parseInt(prompt("How many data rows (excluding the header)?", "2"), 10);
+      cols = Math.max(1, Math.min(8, cols || 3));
+      rows = Math.max(1, Math.min(20, rows || 2));
+      const head = `<tr>${Array.from({ length: cols }, (_, i) => `<th>Header ${i + 1}</th>`).join("")}</tr>`;
+      const bodyRows = Array.from({ length: rows }, () =>
+        `<tr>${Array.from({ length: cols }, () => `<td>&nbsp;</td>`).join("")}</tr>`).join("");
+      document.execCommand("insertHTML", false,
+        `<table class="ed-table"><thead>${head}</thead><tbody>${bodyRows}</tbody></table><p><br></p>`);
+      toast("Click any cell to edit it");
     } else if (type === "divider") {
       document.execCommand("insertHTML", false, `<hr class="dots"><p><br></p>`);
     } else if (type === "embed") {
@@ -282,6 +408,33 @@
       if (url) document.execCommand("insertHTML", false, `<p><a href="${escapeAttr(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a></p><p><br></p>`);
     }
     refreshEmpty(); markDirty();
+  }
+
+  /* ---------- math blocks (LaTeX stored in data-tex, rendered with KaTeX) ---------- */
+  function renderMathBlocks(root) {
+    if (!root) return;
+    root.querySelectorAll(".ed-math").forEach((el) => {
+      const tex = el.getAttribute("data-tex") || "";
+      if (typeof katex !== "undefined") {
+        try { katex.render(tex, el, { displayMode: true, throwOnError: false }); }
+        catch (e) { el.textContent = tex; }
+      } else {
+        el.textContent = tex; // KaTeX not loaded yet — show raw LaTeX as a fallback
+      }
+    });
+  }
+  // Click an existing equation to edit its LaTeX.
+  function wireMathEditing() {
+    $("edBody").addEventListener("click", (e) => {
+      const block = e.target.closest(".ed-math");
+      if (!block) return;
+      const current = block.getAttribute("data-tex") || "";
+      const next = prompt("Edit the equation (LaTeX):", current);
+      if (next === null) return;
+      if (!next.trim()) { block.remove(); }
+      else { block.setAttribute("data-tex", next.trim()); renderMathBlocks($("edBody")); }
+      markDirty();
+    });
   }
 
   /* ---------- insert an image from the local computer ---------- */

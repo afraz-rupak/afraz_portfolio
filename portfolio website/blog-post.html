@@ -11,6 +11,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="stylesheet" href="assets/pages.css" />
+  <!-- KaTeX: math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <div id="site-header-slot"></div>
@@ -156,8 +160,36 @@
         document.querySelectorAll(".prose h2").forEach(h => spy.observe(h));
       }
 
+      renderMath(document.getElementById("articleMain"));
+
       initReveals();
       window.scrollTo(0, 0);
+    }
+
+    // Render math. Two sources:
+    //  1. Editor equation blocks: <p class="ed-math" data-tex="…"> — rendered explicitly.
+    //  2. Hand-written LaTeX in the body: $$…$$ / \[…\] (display), $…$ / \(…\) (inline).
+    // Math inside <code>/<pre> is left untouched.
+    function renderMath(root) {
+      if (!root) return;
+      if (typeof katex !== "undefined") {
+        root.querySelectorAll(".ed-math").forEach((el) => {
+          const tex = el.getAttribute("data-tex") || el.textContent;
+          try { katex.render(tex, el, { displayMode: true, throwOnError: false }); }
+          catch (e) { el.textContent = tex; }
+        });
+      }
+      if (typeof renderMathInElement !== "function") return;
+      renderMathInElement(root, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredClasses: ["ed-math"],
+        throwOnError: false,
+      });
     }
   </script>
 </body>

@@ -347,6 +347,13 @@
 .prose figcaption { text-align: center; color: var(--text-faint); font-size: .88rem; margin-top: .6rem; }
 .prose blockquote { border-left: 3px solid var(--accent); padding: .3rem 0 .3rem 1.4rem; margin-left: 0; font-family: "Space Grotesk", sans-serif; font-size: 1.25rem; line-height: 1.45; color: var(--text); font-weight: 500; letter-spacing: -.01em; }
 .prose blockquote p { color: var(--text); }
+.prose .ed-math { margin: 1.8rem 0; text-align: center; overflow-x: auto; overflow-y: hidden; }
+.prose .ed-math .katex { font-size: 1.2em; }
+.prose table { width: 100%; border-collapse: collapse; margin: 2rem 0; font-size: .96rem; }
+.prose th, .prose td { border: 1px solid var(--border); padding: .65rem .9rem; text-align: left; vertical-align: top; }
+.prose thead th { background: var(--bg-2); font-family: "Space Grotesk", sans-serif; font-weight: 600; color: var(--text); }
+.prose tbody td { color: var(--text-muted); }
+.prose tbody tr:nth-child(even) { background: var(--bg-2); }
 
 .article-tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
 .article-foot { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }

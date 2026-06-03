@@ -43,6 +43,44 @@
 .ed-menu .danger:hover { color: oklch(0.7 0.18 25); }
 .ed-menu hr { border: 0; border-top: 1px solid var(--border); margin: .35rem 0; }
 
+/* ---------- Formatting ribbon ---------- */
+.ed-toolbar {
+  position: sticky; top: 4rem; z-index: 59;
+  display: flex; align-items: center; gap: .1rem; flex-wrap: nowrap;
+  overflow-x: auto; scrollbar-width: thin;
+  padding: .4rem clamp(.6rem, 3vw, 1.2rem);
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.ed-toolbar::-webkit-scrollbar { height: 6px; }
+.ed-toolbar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+.ed-toolbar .tb-group { display: flex; align-items: center; gap: .05rem; }
+.ed-toolbar .tb-sep { width: 1px; height: 1.5rem; background: var(--border); margin: 0 .35rem; flex: none; }
+.tb-btn {
+  position: relative; min-width: 2.1rem; height: 2.1rem; padding: 0 .3rem;
+  border: 0; background: transparent; color: var(--text-muted);
+  border-radius: 7px; display: inline-grid; place-items: center;
+  font-family: "Space Grotesk", sans-serif; font-size: .92rem; font-weight: 500;
+  cursor: pointer; flex: none; transition: color .15s, background .15s;
+}
+.tb-btn:hover { background: var(--bg-2); color: var(--text); }
+.tb-btn.active { background: var(--accent-soft); color: var(--accent); }
+.tb-btn svg { width: 1.15rem; height: 1.15rem; }
+.tb-btn.tb-txt { font-size: .9rem; }
+.tb-select {
+  height: 2.1rem; max-width: 9rem; border: 1px solid var(--border);
+  background: var(--bg-2); color: var(--text); border-radius: 7px;
+  padding: 0 .45rem; margin: 0 .1rem; font: inherit; font-size: .82rem; cursor: pointer; flex: none;
+}
+.tb-select.tb-size { max-width: 5.5rem; }
+.tb-select:focus { outline: none; border-color: var(--accent); }
+.tb-color { flex-direction: column; gap: 1px; padding: 0 .35rem; }
+.tb-color .ca { font-weight: 700; line-height: 1; }
+.tb-color .bar { width: 1.2rem; height: 3px; border-radius: 2px; background: #e0b341; }
+.tb-color .bar-hi { background: #fff3a3; }
+.tb-color input[type="color"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; padding: 0; border: 0; }
+
 /* ---------- Canvas ---------- */
 .ed-canvas { padding: clamp(2.5rem, 7vw, 5rem) 1.25rem 8rem; }
 .ed-doc { width: min(720px, 100%); margin-inline: auto; position: relative; }
@@ -68,6 +106,13 @@
 .ed-body b, .ed-body strong { font-weight: 700; }
 .ed-body pre { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.3rem; overflow-x: auto; }
 .ed-body pre code { font-family: "Space Grotesk", ui-monospace, monospace; font-size: .95rem; line-height: 1.6; color: var(--text); background: none; border: 0; padding: 0; white-space: pre-wrap; }
+.ed-body .ed-math { margin: 1.6rem 0; padding: .6rem; text-align: center; border: 1px dashed var(--border); border-radius: 10px; cursor: pointer; overflow-x: auto; }
+.ed-body .ed-math:hover { border-color: var(--accent); }
+.ed-body .ed-math .katex { font-size: 1.2em; }
+.ed-body table { width: 100%; border-collapse: collapse; margin: 1.6rem 0; font-size: .96rem; }
+.ed-body th, .ed-body td { border: 1px solid var(--border); padding: .55rem .8rem; text-align: left; }
+.ed-body thead th { background: var(--bg-2); font-family: "Space Grotesk"; font-weight: 600; color: var(--text); }
+.ed-body td { color: var(--text); }
 .ed-body hr.dots { border: 0; text-align: center; margin: 2.4rem 0; }
 .ed-body hr.dots::before { content: "· · ·"; letter-spacing: .6em; color: var(--text-faint); font-size: 1.4rem; }
 .ed-body figure { margin: 1.6rem 0; }
